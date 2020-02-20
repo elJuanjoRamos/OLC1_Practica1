@@ -10,27 +10,39 @@ import java.io.PrintWriter;
 
 public class Node {
     String element;
+    String first;
+    String last;
+    boolean anulable;
     int index;
     Node rightChild;
     Node leftChild;
+    
+ 
+    
     private static int correlative=1;
     
     public Node() {
     }
 
-    public Node(String element, Node rightChild, Node leftChild) {
+    public Node(String element, Node rightChild, Node leftChild, String first, String last, boolean anuable) {
         this.element = element;
         this.index = correlative++;
         this.rightChild = rightChild;
         this.leftChild = leftChild;
+        this.last = last;
+        this.first = first;
+        this.anulable = anuable;
+        
     }
     public Node(String element) {
         this.element = element;
         this.index = correlative++;
         this.rightChild = null;
         this.leftChild = null;
+        this.anulable = false;
+        this.first = "0";
+        this.last = "0";
     }
-
     public String getElement() {
         return element;
     }
@@ -62,11 +74,33 @@ public class Node {
     public void setIndex(int index) {
         this.index = index;
     }
+
+    public String getFirst() {
+        return first;
+    }
+
+    public void setFirst(String first) {
+        this.first = first;
+    }
+
+    public String getLast() {
+        return last;
+    }
+
+    public void setLast(String last) {
+        this.last = last;
+    }
+
+    public boolean isAnulable() {
+        return anulable;
+    }
+
+    public void setAnulable(boolean anulable) {
+        this.anulable = anulable;
+    }
     
     
-    
-    
-    
+  
     public void print(String path) {
         FileWriter file = null;
         PrintWriter writer;
@@ -119,15 +153,21 @@ public class Node {
     private String getBody() {
         String etiqueta;
         String str = element.replace('"', ' ');
-    
+        String anuable  = "F";
+        
         if (str.equals("|")) {
             str = "or";
         } 
-    
-        if(leftChild==null && rightChild==null){
-            etiqueta="nodo"+index+" [ label =\""+str+"\"];\n";
+        if (isAnulable()) {
+            anuable = "V";
+        }
+             
+        /*METODO PRINCIPAL*/
+        /*if(leftChild==null && rightChild==null){
+            etiqueta="nodo"+index+" [ label =\""+ getFirst() +str + last +"\"];\n";
         }else{
-            etiqueta="nodo"+index+" [ label =\"|"+str+"|<C1>\"];\n";
+            etiqueta="nodo"+index+" [ label =\"|"+ getFirst() +str + last +"|<C1>\"];\n";
+            
         }
         if(leftChild!=null){
             etiqueta=etiqueta + leftChild.getBody() +
@@ -136,6 +176,22 @@ public class Node {
         if(rightChild!=null){
             etiqueta=etiqueta + rightChild.getBody() +
                "nodo"+index+":C1->nodo"+rightChild.index+"\n";                    
+        }*/
+        
+        
+        /*nuevo metodo*/
+        if(leftChild==null && rightChild==null){
+             etiqueta="nodo"+index+" [ label =\""+getFirst()+"|"+str +"\\l"+ anuable  +"|"+getLast()+"\"];\n";
+        }else{
+             etiqueta="nodo"+index+" [ label =\""+getFirst()+"|"+ str +"\\l"+ anuable   +"|"+getLast()+"\"];\n";
+        }
+        if(leftChild!=null){
+            etiqueta=etiqueta + leftChild.getBody() +
+               "nodo"+index+"->nodo"+leftChild.index +"\n";
+        }
+        if(rightChild!=null){
+            etiqueta=etiqueta + rightChild.getBody() +
+               "nodo"+index+"->nodo"+rightChild.index+"\n";                    
         }
         return etiqueta;
     } 

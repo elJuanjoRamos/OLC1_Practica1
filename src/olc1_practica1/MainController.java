@@ -113,17 +113,23 @@ public class MainController implements Initializable {
 
                         } else {
                             NodeController.getInstancia().Reordering();
+                            NodeController.getInstancia().clearList();
                                 i = j;
                             break;
                         }
-                        //i++;
                     }
-                    
-                   
-                    
                 }
             }
         }
+        //System.out.println("cantidad de hojas = "+NodeController.getInstancia().leafNode());
+        
+       /* System.out.println("la cantidad de nodos es "+NodeController.getInstancia().cantidadNodos());
+       
+        System.out.println("cantidad de hojas = "+NodeController.getInstancia().leafNode());
+        
+        System.out.println("la altura del arbol es = "+NodeController.getInstancia().retornarAltura());
+        System.out.println(" ");
+        NodeController.getInstancia().imprimirNivel();*/
         
         /*for(Token token: TokenController.getInstancia().getArrayListTokens()) {
             if (token.getDescripcion().equals("TK_Simbolo")) {
