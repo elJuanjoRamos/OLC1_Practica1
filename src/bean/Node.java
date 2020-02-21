@@ -13,6 +13,7 @@ public class Node {
     String first;
     String last;
     boolean anulable;
+    boolean isLeaf;
     int index;
     Node rightChild;
     Node leftChild;
@@ -32,6 +33,7 @@ public class Node {
         this.last = "0";
         this.first = "0";
         this.anulable = anuable;
+        this.isLeaf = false;
         
     }
     public Node(String element) {
@@ -42,6 +44,7 @@ public class Node {
         this.anulable = false;
         this.first = "0";
         this.last = "0";
+        this.isLeaf = true;
     }
     public String getElement() {
         return element;
@@ -195,5 +198,9 @@ public class Node {
         }
         return etiqueta;
     } 
+    
+    
+    
+    
     
 }

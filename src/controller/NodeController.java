@@ -5,7 +5,9 @@
  */
 package controller;
 
-import bean.Node;
+import bean.*;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Stack;
@@ -14,6 +16,8 @@ public class NodeController {
 
     private ArrayList<String> listAux = new ArrayList();//Lista que contendra los elementos de la expresion regular
     private ArrayList<String> list = new ArrayList();  //Lista que servira para reordenar los elementos de la expresion regular
+    private ArrayList<RowTable> followList = new ArrayList();  //Lista que servira para los siguientes
+    
     private Stack stk = new Stack();
     int index = 0;
     Node raiz = null;
@@ -21,7 +25,7 @@ public class NodeController {
     /*Variables nuevas de prueba*/
     int cant;
     int altura;
-
+    String tabla = "";
     
     /*SINGLETON*/
     public static NodeController instancia;
@@ -76,8 +80,13 @@ public class NodeController {
         leafNode(raiz);
         setDesition(raiz);
         setRootAntNext(raiz);
+        
+        //Envia la raiz para obtener los siguientes
+        elementsOfTable(raiz);
+        
         //imprime el arbol raiz
         raiz.print(name+ ".jpg");
+        printTable(name+ "table.jpg");
         index++;
 
     }
@@ -108,7 +117,7 @@ public class NodeController {
         } else if (s.equals("*") || s.equals("+") || s.equals("?")) {
             left = (Node) stk.pop();
 
-            if (s.equals("*")) {
+            if (s.equals("*") || s.equals("?")) {
                 anuable = true;
             } else if (s.equals("+")) {
                 if (left.isAnulable()) {
@@ -189,12 +198,11 @@ public class NodeController {
     private void setOrAntNext(Node reco) {
         if (reco != null) {
             reco.setFirst(reco.getLeftChild().getFirst() + "," + reco.getRightChild().getFirst());
-            reco.setLast(reco.getLeftChild().getFirst() + "," + reco.getRightChild().getFirst());
+            reco.setLast(reco.getLeftChild().getLast() + "," + reco.getRightChild().getLast());
             setDesition(reco.getLeftChild());
             setDesition(reco.getRightChild());
         }
     }
-
     //Metodo para poner primiero y siguiente a los operadores * + ?
     private void setOperatorAntNext(Node reco) {
         if (reco != null) {
@@ -206,16 +214,17 @@ public class NodeController {
             setDesition(reco.getRightChild());
         }
     }
-
     //Metodo para poner primero y siguiente al punto
     private void setDotAntNext(Node reco) {
         if (reco != null) {
-
             //Parte izquierda y derecha
-            if (reco.getLeftChild().getElement().equals(".") || reco.getRightChild().getElement().equals(".")) {
+            if (reco.getLeftChild().getElement().equals(".") 
+                    || reco.getRightChild().getElement().equals(".")
+                    || reco.getRightChild().getElement().contains("0") 
+                    || reco.getLeftChild().getElement().contains("0")) {
                 setDesition(reco.getLeftChild());
                 setDesition(reco.getRightChild());
-            } 
+            }  
             //set first
             if (reco.getLeftChild().isAnulable()) {
                 reco.setFirst(reco.getLeftChild().getFirst() + "," + reco.getRightChild().getFirst());
@@ -236,12 +245,150 @@ public class NodeController {
     }
     //Le asigna los primero y ultimo a la raiz
     public void setRootAntNext(Node reco) {
-        reco.setFirst(reco.getLeftChild().getFirst());
-        reco.setLast(reco.getRightChild().getFirst());
+        if (reco.getLeftChild().isAnulable()) {
+                reco.setFirst(reco.getLeftChild().getFirst() + "," + reco.getRightChild().getFirst());
+            } else {
+                reco.setFirst(reco.getLeftChild().getFirst());
+            }
+        reco.setLast(reco.getRightChild().getLast());
     }
-
     //retorna la raiz
     public Node getRoot(){
         return raiz;
     }
+
+
+
+    // metodo para obtener los datos con los que se construiran las tablas
+    public void elementsOfTable(Node n){
+        
+        if (n != null) {
+            
+            if (n.getLeftChild() != null) {
+                String[] f = n.getLeftChild().getLast().split(",");
+                for (int i = 0; i < f.length; i++) {
+                    
+                    if (n.getElement().equals("*") || n.getElement().equals("+")) {
+                    //tabla = tabla + "|" + elemento + " : " + n.getLeftChild().getFirst() + "|\n";
+                        getTable(f[i], n.getLeftChild().getFirst());                
+                    } else if (n.getElement().equals(".")) {
+                        //tabla = tabla + "|" + elemento + " : " + n.getRightChild().getFirst() + "|\n";
+                        getTable(f[i], n.getRightChild().getFirst());
+                    }
+                }
+            }
+            
+            elementsOfTable(n.getLeftChild());
+            elementsOfTable(n.getRightChild());
+        }
+ 
+    }
+
+    
+    
+    // Reestructurar la tabla
+    public void getTable(String noleaf, String follow){
+        
+        int contador = 0;
+        if (followList.isEmpty()) {
+            followList.add(new RowTable(noleaf, follow));
+        } else {
+            
+            for (RowTable o : followList) {
+                if (o.getNoLeaf().equals(noleaf)) {
+                    contador++;
+                }
+            }
+            
+            if (contador == 0) {
+                followList.add(new RowTable(noleaf, follow));
+            }else {
+                for (RowTable o : followList) {
+                    if (o.getNoLeaf().equals(noleaf)) {
+                        o.setFollow(follow + "," +o.getFollow());
+                    }
+                }
+            }
+        }
+        
+        //METODO BURBUJA PARA ORDENAR LOS SIGUIENTES DE MENOR A MAYOR
+        int n = followList.size();
+        for (int i = 0; i < n-1; i++){
+            for (int j = 0; j < n-i-1; j++){
+                if (Integer.parseInt(((RowTable)followList.get(j)).getNoLeaf()) > Integer.parseInt(((RowTable)followList.get(j+1)).getNoLeaf()))
+                {
+                    RowTable swap = followList.get(j);
+                    followList.set(j, followList.get(j + 1));
+                    followList.set(j+1, swap);
+                    
+                }
+            }  
+        }
+    }
+
+    
+    
+    
+    
+    
+    public void printTable(String path) {
+         FileWriter file = null;
+        PrintWriter writer;
+        try
+        {
+            file = new FileWriter("table.dot");
+            writer = new PrintWriter(file);
+            writer.print(getCodeGraphvizTable(path));
+        } 
+        catch (Exception e){
+            System.err.println("Error al escribir el archivo table.dot");
+        }finally{
+           try {
+                if (null != file)
+                    file.close();
+           }catch (Exception e2){
+               System.err.println("Error al cerrar el archivo tables.dot");
+           } 
+        }                        
+        try{
+          Runtime rt = Runtime.getRuntime();
+          //String command = "dot -Tpng \"" + path + "\\" + "aux_grafico" + ".dot\"  -o \"" + path + "\\" + nombre + ".png\"   ";
+          rt.exec( "dot -Tjpg -o "+path+" table.dot");
+          //rt.exec(command);
+          //rt.exec( "dot -Tjpg -o "+path+" aux_grafico.dot");
+          Thread.sleep(500);
+        } catch (Exception ex) {
+            System.out.println(ex);
+            System.err.println("Error al generar la imagen para el archivo aux_grafico.dot");
+        }         
+    }
+    
+    private String getCodeGraphvizTable(String path) {
+        
+        String texto = "";
+        
+         for (RowTable rowTable : followList) {
+            texto = texto + "{<here> "+rowTable.getNoLeaf() +"|"+rowTable.getFollow()+"}|";         
+        }
+         
+        RowTable r = followList.get(followList.size()-1);
+        int a = Integer.parseInt(r.getNoLeaf())+1 ;
+        
+        texto = texto + "{<here> "+ a +"|---}|";         
+         
+         
+        
+        return "digraph grafica{\n" +
+               "rankdir=TB;\n" +
+               "node [shape = record, style=filled, fillcolor=white];\n"
+                +
+                
+                "nodo"+index+" [ label =\""
+                + "{ Tabla de Siguiente "+ path+ "|"+texto+"}"
+                + "\"];\n}\n";
+    }
+     
+
+
+
 }
