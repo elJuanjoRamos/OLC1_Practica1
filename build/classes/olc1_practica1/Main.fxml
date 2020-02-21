@@ -7,6 +7,7 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
@@ -14,7 +15,7 @@
 <AnchorPane id="AnchorPane" prefHeight="982.0" prefWidth="1860.9998779296875" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="olc1_practica1.MainController">
   <children>
     <HBox layoutX="0.0" layoutY="0.0" prefHeight="30.0" prefWidth="1861.0" />
-    <MenuBar layoutX="0.0" layoutY="0.0" prefWidth="1861.0">
+    <MenuBar layoutX="0.0" layoutY="0.0" prefWidth="1886.0">
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
@@ -63,7 +64,7 @@
                 <Insets left="150.0" top="30.0" fx:id="x1" />
               </HBox.margin>
             </Button>
-            <Button mnemonicParsing="false" prefHeight="47.0" prefWidth="147.0" styleClass="success-buttton" text="Analiza Entrada" onAction="#analizar_entrada" HBox.margin="$x1" />
+            <Button mnemonicParsing="false" onAction="#analizar_entrada" prefHeight="47.0" prefWidth="147.0" styleClass="success-buttton" text="Analiza Entrada" HBox.margin="$x1" />
           </children>
         </HBox>
         <HBox alignment="CENTER_LEFT" prefWidth="544.0">
@@ -95,7 +96,19 @@
         <HBox prefHeight="65.0" prefWidth="712.0" />
         <HBox prefHeight="47.0" prefWidth="576.0" styleClass="regexview">
           <children>
-            <ComboBox fx:id="combo" prefWidth="597.0" styleClass="combo-box-popup, ">
+            <ComboBox fx:id="combo" onAction="#on_change" prefWidth="284.0" styleClass="combo-box-popup, ">
+              <items>
+                <FXCollections fx:factory="observableArrayList">
+                  <String fx:value="Item 1" />
+                  <String fx:value="Item 2" />
+                  <String fx:value="Item 3" />
+                </FXCollections>
+              </items>
+              <HBox.margin>
+                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+              </HBox.margin>
+            </ComboBox>
+            <ComboBox id="combo" fx:id="comboElemento" onAction="#print_img" prefWidth="267.0" styleClass="combo-box-popup, ">
               <items>
                 <FXCollections fx:factory="observableArrayList">
                   <String fx:value="Item 1" />
@@ -111,6 +124,15 @@
           <VBox.margin>
             <Insets bottom="50.0" left="50.0" right="50.0" />
           </VBox.margin>
+        </HBox>
+        <HBox prefHeight="-1.0" prefWidth="-1.0">
+          <children>
+            <ImageView fx:id="imagenView" fitHeight="500.0" fitWidth="500.0" pickOnBounds="true" preserveRatio="true">
+              <HBox.margin>
+                <Insets bottom="25.0" left="100.0" top="10.0" />
+              </HBox.margin>
+            </ImageView>
+          </children>
         </HBox>
       </children>
     </VBox>

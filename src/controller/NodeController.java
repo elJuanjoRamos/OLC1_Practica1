@@ -9,14 +9,16 @@ import bean.*;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Stack;
 
 public class NodeController {
 
     private ArrayList<String> listAux = new ArrayList();//Lista que contendra los elementos de la expresion regular
     private ArrayList<String> list = new ArrayList();  //Lista que servira para reordenar los elementos de la expresion regular
+    private ArrayList<String> elementsList = new ArrayList();  //Lista que contendra los nombres de los elementos
     private ArrayList<RowTable> followList = new ArrayList();  //Lista que servira para los siguientes
+    private ArrayList<RowTable> newFollowList = new ArrayList();  //Lista que servira para la tabla de transiciones
+    
     
     private Stack stk = new Stack();
     int index = 0;
@@ -25,7 +27,7 @@ public class NodeController {
     /*Variables nuevas de prueba*/
     int cant;
     int altura;
-    String tabla = "";
+    String nodeName = "";
     
     /*SINGLETON*/
     public static NodeController instancia;
@@ -45,11 +47,21 @@ public class NodeController {
     public void Insert(String element) {
         listAux.add(element);
     }
+    
+    //Inserta los nombres de los elmentos, 
+    public void InsertElement(String tree, String table, String tablet, String afd){
+        elementsList.add(tree);
+        elementsList.add(table);
+        elementsList.add(tablet);
+        elementsList.add(afd);
+    }
 
     //Limpa las listas de elementos
     public void clearList() {
         raiz = null;
         cant = 0;
+        this.followList.clear();
+        //this.elementsList.clear();
         this.listAux.clear();
         this.list.clear();
     }
@@ -85,8 +97,8 @@ public class NodeController {
         elementsOfTable(raiz);
         
         //imprime el arbol raiz
-        raiz.print(name+ ".jpg");
-        printTable(name+ "table.jpg");
+        raiz.print(name+ "Tree.jpg");
+        printElement(name, 1);
         index++;
 
     }
@@ -173,6 +185,7 @@ public class NodeController {
                 } else {
                     reco.setAnulable(true);
                 }
+                reco.setIsLeaf(true);
                 //le da numeracion
                 reco.setFirst(String.valueOf(cant));
                 reco.setLast(String.valueOf(cant));
@@ -186,9 +199,9 @@ public class NodeController {
         if (n != null) {
             if (n.getElement().equals("|")) {
                 setOrAntNext(n);
-            } else if (n.getElement().equals("*") || n.getElement().equals("?") || n.getElement().equals("+")) {
+            } else if ((n.getElement().equals("*") || n.getElement().equals("?") || n.getElement().equals("+")) && n.isIsLeaf() == false  ) {
                 setOperatorAntNext(n);
-            } else if (n.getElement().equals(".")) {
+            } else if (n.getElement().equals(".") && n.isIsLeaf() == false) {
                 setDotAntNext(n);
             }
         }
@@ -206,10 +219,8 @@ public class NodeController {
     //Metodo para poner primiero y siguiente a los operadores * + ?
     private void setOperatorAntNext(Node reco) {
         if (reco != null) {
-            if (reco.getElement().equals("*") || reco.getElement().equals("?") || reco.getElement().equals("+")) {
-                reco.setFirst(reco.getLeftChild().getFirst());
-                reco.setLast(reco.getLeftChild().getLast());
-            }
+            reco.setFirst(reco.getLeftChild().getFirst());
+            reco.setLast(reco.getLeftChild().getLast());
             setDesition(reco.getLeftChild());
             setDesition(reco.getRightChild());
         }
@@ -221,7 +232,9 @@ public class NodeController {
             if (reco.getLeftChild().getElement().equals(".") 
                     || reco.getRightChild().getElement().equals(".")
                     || reco.getRightChild().getElement().contains("0") 
-                    || reco.getLeftChild().getElement().contains("0")) {
+                    || reco.getLeftChild().getElement().contains("0")
+                    || reco.getFirst().contains("0")
+                    || reco.getLast().contains("0")) {
                 setDesition(reco.getLeftChild());
                 setDesition(reco.getRightChild());
             }  
@@ -269,11 +282,12 @@ public class NodeController {
                 for (int i = 0; i < f.length; i++) {
                     
                     if (n.getElement().equals("*") || n.getElement().equals("+")) {
-                    //tabla = tabla + "|" + elemento + " : " + n.getLeftChild().getFirst() + "|\n";
-                        getTable(f[i], n.getLeftChild().getFirst());                
+                        getLeafElement(raiz, f[i]);
+                        getTable(nodeName, f[i], n.getLeftChild().getFirst());                 
+                    
                     } else if (n.getElement().equals(".")) {
-                        //tabla = tabla + "|" + elemento + " : " + n.getRightChild().getFirst() + "|\n";
-                        getTable(f[i], n.getRightChild().getFirst());
+                        getLeafElement(raiz, f[i]);
+                        getTable(nodeName, f[i], n.getRightChild().getFirst());
                     }
                 }
             }
@@ -283,25 +297,20 @@ public class NodeController {
         }
  
     }
-
-    
-    
     // Reestructurar la tabla
-    public void getTable(String noleaf, String follow){
-        
+    public void getTable(String element, String noleaf, String follow){
+
         int contador = 0;
         if (followList.isEmpty()) {
-            followList.add(new RowTable(noleaf, follow));
+            followList.add(new RowTable(element, noleaf, follow));
         } else {
-            
             for (RowTable o : followList) {
                 if (o.getNoLeaf().equals(noleaf)) {
                     contador++;
                 }
             }
-            
             if (contador == 0) {
-                followList.add(new RowTable(noleaf, follow));
+                followList.add(new RowTable(element, noleaf, follow));
             }else {
                 for (RowTable o : followList) {
                     if (o.getNoLeaf().equals(noleaf)) {
@@ -310,7 +319,6 @@ public class NodeController {
                 }
             }
         }
-        
         //METODO BURBUJA PARA ORDENAR LOS SIGUIENTES DE MENOR A MAYOR
         int n = followList.size();
         for (int i = 0; i < n-1; i++){
@@ -331,29 +339,133 @@ public class NodeController {
     
     
     
-    public void printTable(String path) {
-         FileWriter file = null;
+    
+    /***************METODOS PARA LA TABLA DE TRANSICIONES*******************/
+    
+    //metodo para armar la nueva tabla de siguientes, elimina los elementos repetidos
+    public void NewFollow(){
+        
+        for (int i = 0; i < followList.size(); i++) {
+            RowTable r = (RowTable)followList.get(i);
+            for (int j = i+1; j < followList.size(); j++) {
+                RowTable r2 = (RowTable)followList.get(j);
+                if (r.getNoLeaf().equals(r2.getNoLeaf())) {
+                    r.setFollow(r.getFollow() + "," + r2.getFollow());
+                    newFollowList.add(r);
+                    break;
+                }
+                
+            }
+        }
+        
+        for (int i = 0; i < newFollowList.size(); i++) {
+            RowTable r = (RowTable)newFollowList.get(i);
+            System.out.println(r.getLexema() + " " + r.getNoLeaf() + " " + r.getFollow());
+        }
+        
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /*Metodo para imprimir los elementos*/
+    
+    public void printElement(String path, int element) {
+        FileWriter file = null;
         PrintWriter writer;
+        String imgName = "";
+        String fileName = "";
         try
         {
-            file = new FileWriter("table.dot");
+            //Se va a imprimir tabla siguiente
+            if (element == 1) {
+                file = new FileWriter("table.dot");
+                imgName = path+"Table.jpg";
+                fileName = "table";
+            //Se va a imprimir tabla de transicion
+            } else if(element == 2){
+                file = new FileWriter("tabletransition.dot");
+                imgName = path+"Transition.jpg";
+                fileName = "transition";
+            } else if(element == 3){
+                file = new FileWriter("afd.dot");
+                imgName = path+"Afd.jpg";
+                fileName = "afd";
+            }
             writer = new PrintWriter(file);
-            writer.print(getCodeGraphvizTable(path));
+            writer.print(getCodeGraphviz(path, element));
         } 
         catch (Exception e){
-            System.err.println("Error al escribir el archivo table.dot");
+            System.err.println("Error al escribir el archivo .dot");
         }finally{
            try {
                 if (null != file)
                     file.close();
            }catch (Exception e2){
-               System.err.println("Error al cerrar el archivo tables.dot");
+               System.err.println("Error al cerrar el archivo .dot");
            } 
         }                        
         try{
           Runtime rt = Runtime.getRuntime();
           //String command = "dot -Tpng \"" + path + "\\" + "aux_grafico" + ".dot\"  -o \"" + path + "\\" + nombre + ".png\"   ";
-          rt.exec( "dot -Tjpg -o "+path+" table.dot");
+          rt.exec( "dot -Tjpg -o "+imgName+" " + fileName +".dot");
           //rt.exec(command);
           //rt.exec( "dot -Tjpg -o "+path+" aux_grafico.dot");
           Thread.sleep(500);
@@ -363,32 +475,54 @@ public class NodeController {
         }         
     }
     
-    private String getCodeGraphvizTable(String path) {
+    private String getCodeGraphviz(String path, int element) {
         
         String texto = "";
         
-         for (RowTable rowTable : followList) {
-            texto = texto + "{<here> "+rowTable.getNoLeaf() +"|"+rowTable.getFollow()+"}|";         
+        //Se va a imprimir tabla
+        if (element == 1) {
+            for (RowTable rowTable : followList) {
+                String str = rowTable.getLexema().replace('"', ' ');
+                texto = texto + "{"+str+"|<here> "+rowTable.getNoLeaf() +"|"+rowTable.getFollow()+"}|";         
+            }
+
+            RowTable r = followList.get(followList.size()-1);
+            int a = Integer.parseInt(r.getNoLeaf())+1 ;
+
+            texto = texto + "{#|<here> "+ a +"|---}|";   
         }
          
-        RowTable r = followList.get(followList.size()-1);
-        int a = Integer.parseInt(r.getNoLeaf())+1 ;
-        
-        texto = texto + "{<here> "+ a +"|---}|";         
-         
-         
-        
         return "digraph grafica{\n" +
                "rankdir=TB;\n" +
                "node [shape = record, style=filled, fillcolor=white];\n"
                 +
                 
                 "nodo"+index+" [ label =\""
-                + "{ Tabla de Siguiente "+ path+ "|"+texto+"}"
+                + "{ Follow Table "+ path+ "|"+texto+"}"
                 + "\"];\n}\n";
     }
      
 
+    public void getLeafElement(Node reco, String node){
+        if (reco != null) {
+            if (reco.isIsLeaf()) {
+                if (reco.getFirst().equals(node) && reco.getLast().equals(node)) {
+                    nodeName = reco.getElement();    
+                }
+               } else {
+                getLeafElement(reco.getLeftChild(), node);
+                getLeafElement(reco.getRightChild(), node);   
+            }
+            
+        }
+    }
 
+    
+    
+    /*********METODOS PARA LA PARTE VISUAL**********/
+    //Retorna la lista de elementos guardados, (arboles, afds, tablas)
+    public ArrayList getElements(){
+        return this.elementsList;
+    }
 
 }

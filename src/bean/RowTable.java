@@ -17,8 +17,8 @@ public class RowTable {
     public RowTable() {
     }
 
-    public RowTable(String noLeaf, String follow) {
-        this.lexema = "";
+    public RowTable(String l, String noLeaf, String follow) {
+        this.lexema = l;
         this.noLeaf = noLeaf;
         this.follow = follow;
     }

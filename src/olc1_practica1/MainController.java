@@ -11,6 +11,7 @@ import controller.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -23,6 +24,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -31,16 +34,20 @@ public class MainController implements Initializable {
     
     /*VARIABLES*/
     private ObservableList<String> opciones;
+    private ObservableList<String> elementOptions;
     @FXML ComboBox combo;
+    @FXML ComboBox comboElemento;
     @FXML TextArea arearegular;
+    @FXML ImageView imagenView;
     
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
-        String[] array = {"Arboles", "Siguiente", "Transiciones", "Automata"};
+        comboElemento.setVisible(false);
+        String[] array = {"Tree", "Table", "Transition", "Afd"};
         opciones = FXCollections.observableArrayList(array);
         combo.setItems(opciones);
+        imagenView.setImage(null);
     }    
     
     /*CARGA DE ARCHIVO*/
@@ -122,6 +129,7 @@ public class MainController implements Initializable {
                         } else {
                             //Llama al metodo Reordering para armar el arbol de expresion regular
                             NodeController.getInstancia().Reordering(texto);
+                            NodeController.getInstancia().InsertElement(texto+"Tree", texto+"Table", texto+"Transition", texto+"Afd");
                             ExpresionTreeController.getInstancia().Insert(texto, NodeController.getInstancia().getRoot());
                             NodeController.getInstancia().clearList();
                             i = j;
@@ -131,25 +139,45 @@ public class MainController implements Initializable {
                 }
             }
         }
-        //System.out.println("cantidad de hojas = "+NodeController.getInstancia().leafNode());
         
-       /* System.out.println("la cantidad de nodos es "+NodeController.getInstancia().cantidadNodos());
-       
-        System.out.println("cantidad de hojas = "+NodeController.getInstancia().leafNode());
-        
-        System.out.println("la altura del arbol es = "+NodeController.getInstancia().retornarAltura());
-        System.out.println(" ");
-        NodeController.getInstancia().imprimirNivel();*/
-        
-        /*for(Token token: TokenController.getInstancia().getArrayListTokens()) {
-            if (token.getDescripcion().equals("TK_Simbolo")) {
-                System.out.println(token);            
-            }
-        }*/
-        //SetController.getInstancia().assemble_Sets();
     }
     
-    /*set variables*/
+    @FXML
+    private void on_change(ActionEvent event){
+        comboElemento.setVisible(true);
+        String element = combo.getValue().toString();
+        
+        ArrayList<String> array = new ArrayList();
+        
+        for (int i = 0; i < NodeController.getInstancia().getElements().size(); i++) {
+            String str = (String)(NodeController.getInstancia().getElements()).get(i);
+            if (str.contains(element)) {
+                array.add(str);
+            }
+        }
+        comboElemento.getItems().removeAll(comboElemento.getInsets());
+        elementOptions = FXCollections.observableArrayList(array);
+        comboElemento.setItems(elementOptions);
+        
+        
+    }
+    
+    
+    @FXML
+    private void print_img(ActionEvent event) throws URISyntaxException{
+        if (comboElemento.getValue().toString() != "") {
+            File file = new File( comboElemento.getValue().toString() + ".jpg");
+            if (file.exists()) {
+                if (file != null) {
+                    String path = "file:///" + file.getAbsoluteFile().getParent()+"\\"+comboElemento.getValue().toString() + ".jpg";
+                    Image i = new Image(path);
+                    imagenView.setImage(i);
+                }
+            } else {
+                System.out.println("no encontrado");
+            }
+        }
+    }
     
 
     

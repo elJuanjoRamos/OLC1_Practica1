@@ -44,7 +44,7 @@ public class Node {
         this.anulable = false;
         this.first = "0";
         this.last = "0";
-        this.isLeaf = true;
+        this.isLeaf = false;
     }
     public String getElement() {
         return element;
@@ -100,6 +100,14 @@ public class Node {
 
     public void setAnulable(boolean anulable) {
         this.anulable = anulable;
+    }
+
+    public boolean isIsLeaf() {
+        return isLeaf;
+    }
+
+    public void setIsLeaf(boolean isLeaf) {
+        this.isLeaf = isLeaf;
     }
     
     
