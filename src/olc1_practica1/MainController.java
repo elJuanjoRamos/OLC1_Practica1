@@ -7,9 +7,7 @@ package olc1_practica1;
 
 import analyzer.LexicoAnalizer;
 import bean.Token;
-import controller.NodeController;
-import controller.SetController;
-import controller.TokenController;
+import controller.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -101,20 +99,32 @@ public class MainController implements Initializable {
         for (int i = 0; i < l.size(); i++) {
             Token t = (Token)l.get(i);
             if (t.getLexema().equals(">")) {
-                Token t1 = (Token)l.get(i+1);
+                String texto = "";
+                
+                //busca el nombre de la expresion
+                for (int j = i; j > 0; j--) {
+                    Token a = (Token)l.get(j);
+                    if (a.getDescripcion().equals("Identificador")) {
+                        texto = a.getLexema();
+                        break;
+                    }
+                }
+
+                Token t1 = (Token)l.get(i+1); // token de inicio de la expresion
                 if (t1 != null && t1.getLexema().equals(".")) {
-                    
+                    //itera en la expresion y guarda los elementos
                     for (int j = i+1; j < l.size(); j++) {
                         Token t2 = (Token)l.get(j);
                         if (!t2.getLexema().equals(";")) {
                             if (!t2.getLexema().equals("{") && !t2.getLexema().equals("}")) {
                                 NodeController.getInstancia().Insert(t2.getLexema());
                             }
-
                         } else {
-                            NodeController.getInstancia().Reordering();
+                            //Llama al metodo Reordering para armar el arbol de expresion regular
+                            NodeController.getInstancia().Reordering(texto);
+                            ExpresionTreeController.getInstancia().Insert(texto, NodeController.getInstancia().getRoot());
                             NodeController.getInstancia().clearList();
-                                i = j;
+                            i = j;
                             break;
                         }
                     }

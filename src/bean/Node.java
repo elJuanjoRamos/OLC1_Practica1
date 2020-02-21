@@ -24,13 +24,13 @@ public class Node {
     public Node() {
     }
 
-    public Node(String element, Node rightChild, Node leftChild, String first, String last, boolean anuable) {
+    public Node(String element, Node rightChild, Node leftChild, boolean anuable) {
         this.element = element;
         this.index = correlative++;
         this.rightChild = rightChild;
         this.leftChild = leftChild;
-        this.last = last;
-        this.first = first;
+        this.last = "0";
+        this.first = "0";
         this.anulable = anuable;
         
     }
