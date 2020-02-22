@@ -1,17 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package controller;
 
 import bean.*;
 import java.util.ArrayList;
 
-/**
- *
- * @author Juan José Ramos
- */
+
 public class ExpresionTreeController {
     private ArrayList<ExpressionTree> list = new ArrayList();//Lista que contendra los elementos de la expresion regular
 
