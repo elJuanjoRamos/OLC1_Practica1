@@ -9,14 +9,20 @@ import analyzer.LexicoAnalizer;
 import bean.Token;
 import controller.*;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ResourceBundle;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -40,7 +46,7 @@ public class MainController implements Initializable {
     @FXML TextArea arearegular;
     @FXML ImageView imagenView;
     
-    
+    String fileName = "";
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         comboElemento.setVisible(false);
@@ -53,7 +59,7 @@ public class MainController implements Initializable {
     /*CARGA DE ARCHIVO*/
     @FXML
     private void cargar_archivo(ActionEvent event) {
-         Stage stage = new Stage();
+        Stage stage = new Stage();
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Resource File");
         fileChooser.getExtensionFilters().addAll(
@@ -67,6 +73,7 @@ public class MainController implements Initializable {
          // Apertura del fichero y creacion de BufferedReader para poder
          // hacer una lectura comoda (disponer del metodo readLine()).
          File archivo = selectedFile;
+         fileName = archivo.getName();
          fr = new FileReader (archivo);
          br = new BufferedReader(fr);
 
@@ -179,8 +186,57 @@ public class MainController implements Initializable {
         }
     }
     
+    @FXML
+    private void save_file(ActionEvent event) throws IOException {
+        
+       /* BufferedWriter output = null;
+        try {
+            File file = new File(fileName);
+            output = new BufferedWriter(new FileWriter(file));
+            output.write(arearegular.getText());
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        } finally {
+          if ( output != null ) {
+            output.close();
+          }
+        }*/
+       Stage stage = new Stage();
+        FileChooser fileChooser = new FileChooser();
+ 
+            //Set extension filter for text files
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("er files (*.er)", "*.er");
+            fileChooser.getExtensionFilters().add(extFilter);
+ 
+            //Show save file dialog
+            File file = fileChooser.showSaveDialog(stage);
+ 
+            if (file != null) {
+                saveTextToFile(arearegular.getText(), file);
+        }
+    }
+    private void saveTextToFile(String content, File file) {
+        try {
+            PrintWriter writer;
+            writer = new PrintWriter(file);
+            writer.println(content);
+            writer.close();
+        } catch (IOException ex) {
+            //Logger.getLogger(SaveFileWithFileChooser.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
 
     
-    
+    @FXML
+    private void print_tokens(ActionEvent event) throws IOException {
+        
+        TokenController.getInstancia().PrintToken(fileName);
+        
+    }
+    @FXML
+    private void print_errors(ActionEvent event) throws IOException {
+        TokenController.getInstancia().PrintError(fileName);
+    }
     
 }
