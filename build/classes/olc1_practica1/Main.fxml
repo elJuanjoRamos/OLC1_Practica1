@@ -61,7 +61,7 @@
         </TextArea>
         <HBox prefHeight="100.0" prefWidth="200.0">
           <children>
-            <Button mnemonicParsing="false" prefHeight="47.0" prefWidth="162.0" styleClass="success-buttton, primary-buttton" text="Generar Automata">
+            <Button mnemonicParsing="false" onAction="#print" prefHeight="47.0" prefWidth="162.0" styleClass="success-buttton, primary-buttton" text="Generar Automata">
               <HBox.margin>
                 <Insets left="150.0" top="30.0" fx:id="x1" />
               </HBox.margin>

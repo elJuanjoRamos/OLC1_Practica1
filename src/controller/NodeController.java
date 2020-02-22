@@ -483,13 +483,13 @@ public class NodeController {
         if (element == 1) {
             for (RowTable rowTable : followList) {
                 String str = rowTable.getLexema().replace('"', ' ');
-                texto = texto + "{"+str+"|<here> "+rowTable.getNoLeaf() +"|"+rowTable.getFollow()+"}|";         
+                texto = texto + "{<here> "+rowTable.getNoLeaf() +"|"+rowTable.getFollow()+"}|";         
             }
 
             RowTable r = followList.get(followList.size()-1);
             int a = Integer.parseInt(r.getNoLeaf())+1 ;
 
-            texto = texto + "{#|<here> "+ a +"|---}|";   
+            texto = texto + "{<here> "+ a +"|---}|";   
         }
          
         return "digraph grafica{\n" +

@@ -160,6 +160,10 @@ public class LexicoAnalizer {
                                 TokenController.getInstancia().agregarError(fila, columna, String.valueOf(letra), "TD_Desconocido");
                             break;
                         }            
+                    } else {
+                        System.out.println("entro 2");
+                        TokenController.getInstancia().agregarError(fila, columna, String.valueOf(letra), "TD_Desconocido");
+                        
                     }
                 break;
                 case 1:
@@ -275,6 +279,10 @@ public class LexicoAnalizer {
                         auxiliar = "";
                     }
                 break;
+                default:
+                    System.out.println("entro 2");
+                    TokenController.getInstancia().agregarError(fila, columna, String.valueOf(letra), "TD_Desconocido");    
+                    break;
                 
             }
         }

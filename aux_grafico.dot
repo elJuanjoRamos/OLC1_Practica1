@@ -1,35 +1,33 @@
 digraph grafica{
 rankdir=TB;
 node [shape = record, style=filled, fillcolor=seashell2];
-nodo66 [ label ="1|.\lF|7"];
-nodo64 [ label ="1|.\lF|6"];
-nodo63 [ label ="1|+\lF|1"];
-nodo62 [ label ="1|digito\lF|1"];
-nodo63->nodo62
-nodo64->nodo63
-nodo61 [ label ="2,3,4,5|+\lF|6"];
-nodo60 [ label ="2,3,4,5|.\lF|6"];
-nodo59 [ label ="2,3,4,5|or\lF|2,3,4,5"];
-nodo58 [ label ="2| + \lF|2"];
+nodo65 [ label ="1,3|.\lF|7"];
+nodo63 [ label ="1,3|.\lF|5,6"];
+nodo62 [ label ="1,3|.\lF|5"];
+nodo61 [ label ="1,3|+\lF|2,4"];
+nodo60 [ label ="1,3|or\lF|2,4"];
+nodo59 [ label ="1|.\lF|2"];
+nodo58 [ label ="1| a \lF|1"];
 nodo59->nodo58
-nodo57 [ label ="3,4,5|or\lF|3,4,5"];
-nodo56 [ label ="3| - \lF|3"];
-nodo57->nodo56
-nodo55 [ label ="4,5|or\lF|4,5"];
-nodo54 [ label ="4| * \lF|4"];
-nodo55->nodo54
-nodo53 [ label ="5| / \lF|5"];
-nodo55->nodo53
-nodo57->nodo55
+nodo57 [ label ="2| b \lF|2"];
 nodo59->nodo57
 nodo60->nodo59
-nodo52 [ label ="6|+\lF|6"];
-nodo51 [ label ="6|digito\lF|6"];
-nodo52->nodo51
-nodo60->nodo52
+nodo56 [ label ="3|.\lF|4"];
+nodo55 [ label ="3| a \lF|3"];
+nodo56->nodo55
+nodo54 [ label ="4| c \lF|4"];
+nodo56->nodo54
+nodo60->nodo56
 nodo61->nodo60
-nodo64->nodo61
-nodo66->nodo64
-nodo65 [ label ="7|#\lF|7"];
-nodo66->nodo65
+nodo62->nodo61
+nodo53 [ label ="5| d \lF|5"];
+nodo62->nodo53
+nodo63->nodo62
+nodo52 [ label ="6|?\lV|6"];
+nodo51 [ label ="6| a \lF|6"];
+nodo52->nodo51
+nodo63->nodo52
+nodo65->nodo63
+nodo64 [ label ="7|#\lF|7"];
+nodo65->nodo64
 }

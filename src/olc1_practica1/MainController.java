@@ -99,16 +99,12 @@ public class MainController implements Initializable {
             e2.printStackTrace();
          }
       }            
-        }
+     }
         
     }
-    
     @FXML
-    private void analizar_entrada(ActionEvent event) {
-        TokenController.getInstancia().limpiarArrayList();
-        LexicoAnalizer.getInstance().Analizador(arearegular.getText());
-       
-        ArrayList l = TokenController.getInstancia().getArrayListTokens();
+    private void print(ActionEvent event){
+         ArrayList l = TokenController.getInstancia().getArrayListTokens();
         
         for (int i = 0; i < l.size(); i++) {
             Token t = (Token)l.get(i);
@@ -146,7 +142,12 @@ public class MainController implements Initializable {
                 }
             }
         }
-        
+    }
+    @FXML
+    private void analizar_entrada(ActionEvent event) {
+        TokenController.getInstancia().limpiarArrayList();
+        LexicoAnalizer.getInstance().Analizador(arearegular.getText());
+        //NodeController.getInstancia().clearList();
     }
     
     @FXML
@@ -172,7 +173,7 @@ public class MainController implements Initializable {
     
     @FXML
     private void print_img(ActionEvent event) throws URISyntaxException{
-        if (comboElemento.getValue().toString() != "") {
+        if (comboElemento.getValue() != null) {
             File file = new File( comboElemento.getValue().toString() + ".jpg");
             if (file.exists()) {
                 if (file != null) {
@@ -189,18 +190,6 @@ public class MainController implements Initializable {
     @FXML
     private void save_file(ActionEvent event) throws IOException {
         
-       /* BufferedWriter output = null;
-        try {
-            File file = new File(fileName);
-            output = new BufferedWriter(new FileWriter(file));
-            output.write(arearegular.getText());
-        } catch ( IOException e ) {
-            e.printStackTrace();
-        } finally {
-          if ( output != null ) {
-            output.close();
-          }
-        }*/
        Stage stage = new Stage();
         FileChooser fileChooser = new FileChooser();
  
@@ -230,7 +219,6 @@ public class MainController implements Initializable {
     
     @FXML
     private void print_tokens(ActionEvent event) throws IOException {
-        
         TokenController.getInstancia().PrintToken(fileName);
         
     }
